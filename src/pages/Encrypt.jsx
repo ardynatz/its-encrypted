@@ -1,7 +1,13 @@
 import AES from "crypto-js/aes";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { Collapse, Button } from "@material-tailwind/react";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@material-tailwind/react";
 
 const encrypt = (message, password) => {
   const ciphertext = AES.encrypt(message, password).toString();
@@ -34,6 +40,8 @@ const EncryptApp = () => {
   const [cipherText, setCipherText] = useState("");
   const [open, setOpen] = useState(false);
 
+  const handleOpen = () => setOpen(!open);
+
   const handleMessageChange = (event) => {
     if (event.target.value == "") {
       setOpen(false);
@@ -61,7 +69,6 @@ const EncryptApp = () => {
       const cipher = encrypt(message, password).toString();
       setCipherText(cipher);
       setOpen(true);
-      document.getElementById("result").innerHTML = cipher;
     }
   };
 
@@ -72,8 +79,8 @@ const EncryptApp = () => {
 
   return (
     <>
-      <div className="relative w-full flex flex-col h-full content-center items-center justify-center">
-        <div className="relative w-full isolate-auto overflow-hidden flex-1 h-full bg-gray-900 h-100">
+      <div className="relative w-full flex flex-col h-screen content-center items-center justify-center">
+        <div className="relative w-full isolate-auto overflow-hidden flex-1 h-screen bg-gray-900 h-100">
           <div className="mx-auto my-auto max-w-7xl px-6 sm:pb-32 lg:flex lg:px-8">
             <div className="mx-auto my-auto max-w-2xl flex-shrink-0 lg:mx-auto lg:max-w-4xl lg:pt-8">
               <h1 className="mt-10 text-center text-4xl font-bold tracking-tight text-white sm:text-6xl">
@@ -109,17 +116,44 @@ const EncryptApp = () => {
                 />
                 <Button onClick={handleClick}>Encrypt Message</Button>
               </div>
-              <div className="mt-6 pb-32">
-                <Collapse className="flex flex-col gap-4" open={open}>
-                  <Button onClick={handleCopy}>Copy result</Button>
-                  <textarea
-                    rows="6"
-                    name="ciphertext"
-                    id="result"
-                    className="resize-y w-full px-3 py-2.5 text-white rounded-md transition-all bg-gray-800 border border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:outline-0 focus:border-2 focus:border-blue-500"
-                  ></textarea>
-                </Collapse>
-              </div>
+              <Fragment>
+                <Dialog
+                  className="bg-gray-900"
+                  open={open}
+                  handler={handleOpen}
+                  animate={{
+                    mount: { scale: 1, y: 0 },
+                    unmount: { scale: 0.9, y: -100 },
+                  }}
+                >
+                  <DialogHeader className="text-white">
+                    Encrypt result
+                  </DialogHeader>
+                  <DialogBody>
+                    <textarea
+                      rows="6"
+                      name="ciphertext"
+                      id="result"
+                      onChange={e => setCipherText(e.target.value)}
+                      value={cipherText}
+                      className="resize-y w-full rounded-md px-4 py-4 text-white bg-gray-900 border border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:outline-0 focus:border-2 focus:border-blue-500"
+                    ></textarea>
+                  </DialogBody>
+                  <DialogFooter>
+                    <Button
+                      variant="text"
+                      color="red"
+                      onClick={handleOpen}
+                      className="mr-4"
+                    >
+                      <span>Close</span>
+                    </Button>
+                    <Button onClick={handleCopy}>
+                      <span>Copy result</span>
+                    </Button>
+                  </DialogFooter>
+                </Dialog>
+              </Fragment>
             </div>
           </div>
         </div>
