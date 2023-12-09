@@ -12,7 +12,7 @@ module.exports = {
           PM2_SERVE_SPA: 'true',
         },
         instances: '1',
-        name: 'itsencrypted',
+        name: 'its-encrypted',
       },
     ],
   }
